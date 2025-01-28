@@ -1,0 +1,159 @@
+html_template = """
+<<!DOCTYPE html>
+<html>
+<head>
+    <title>Translation & Speech Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #7f00ff, #e100ff, #0000ff);
+            background-size: 400% 400%;
+            animation: gradient-flow 8s ease infinite;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            margin: 30px auto;
+            width: 60%;
+            padding: 40px;
+            background: linear-gradient(120deg, #7f00ff, #e100ff, #0000ff);
+            border: 5px solid #ffd700;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        h1, h2 {
+            color: #ffd700;
+        }
+
+        input, select, button {
+            margin: 12px 0;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: linear-gradient(120deg, #e0115f, #8b0000);  /* Ruby Red to Deep Red Gradient */
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(120deg, #8b0000, #e0115f);  /* Inverted gradient on hover */
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 5px solid #ffd700;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        input, select {
+            font-weight: bold;
+        }
+
+        label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        audio {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Translation & Speech Tool</h1>
+
+    <div class="container">
+        <h2>Text Translation</h2>
+        <form action="/translate" method="post">
+            <label>Text:</label><br>
+            <input type="text" name="text" required><br>
+            <label>Source Language:</label><br>
+            <input type="text" name="src_lang" value="auto" disabled><br>
+            <label>Target Language (English or Mandarin):</label><br>
+            <select name="dest_lang">
+                <option value="en">English</option>
+                <option value="zh-CN">Mandarin</option>
+            </select><br><br>
+            <button type="submit">Translate</button>
+        </form>
+        {% if translation_result %}
+        <div class="result">
+            <h3>Translated Text:</h3>
+            <p>{{ translation_result }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <h2>Text-to-Speech</h2>
+        <form action="/speak" method="post">
+            <label>Text:</label><br>
+            <input type="text" name="text" required><br>
+            <label>Language:</label><br>
+            <select name="lang" required>
+                <option value="en">English</option>
+                <option value="zh">Mandarin</option>
+            </select><br><br>
+            <button type="submit">Generate Speech</button>
+        </form>
+        {% if audio_url %}
+        <div class="result">
+            <h3>Generated Speech:</h3>
+            <audio controls>
+                <source src="{{ audio_url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <h2>Speech-to-Speech (Voice Input)</h2>
+        <form action="/speech_to_speech" method="post" enctype="multipart/form-data">
+            <label>Upload your speech audio file (e.g., WAV):</label><br>
+            <input type="file" name="audio_file" required><br><br>
+            <button type="submit">Submit for Speech-to-Speech</button>
+        </form>
+        {% if recognized_text and speech_audio_url %}
+        <div class="result">
+            <h3>Recognized Speech:</h3>
+            <p>{{ recognized_text }}</p>
+            <h3>Generated Speech:</h3>
+            <audio controls>
+                <source src="{{ speech_audio_url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+"""
